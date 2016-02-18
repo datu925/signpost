@@ -1,0 +1,1 @@
+Concept: like alt shortcuts in Microsoft Office (2010 and above, I think?), if you trigger a shortcut, it maps each clickable link (or form or button, etc.) on a page to a letter, so that you can just put in your keyboard shortcut and click the link.
