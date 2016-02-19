@@ -1,0 +1,12 @@
+<div id="vote_answer">
+<a href='/answers/<%= answer.id %>/vote_up'><div class="arrow-up"></div></a>
+<div class="score"><%= answer.points %></div>
+<a href='/answers/<%= answer.id %>/vote_down'><div class="arrow-down"></div></a>
+</div>
+<div class="answer-content">
+        <div class='answer_body'><%= answer.body %><br>
+        <div class="author-content">
+        Answered: <%= answer.created_at.strftime("%m/%d/%Y") %><br>
+        Posted by: <a href='/users/<%= answer.user_id %>'><%= answer.author %></a></div><br>
+
+      </div><br>
