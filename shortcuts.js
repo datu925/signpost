@@ -40,7 +40,6 @@ function generateShortcutList(size) {
 
 function assignLinks(shortcutList, links) {
     var i = 0;
-    var j = 0;
     var shortcutHash = {};
     while (i < links.length) {
         var shortcut = shortcutList[i]
@@ -61,8 +60,15 @@ function isValidLetter(letter) {
     return "a" <= letter && "z" >= letter;
 }
 
+function exitExtension() {
+    $(".popup").remove();
+    $("body").off("keyup");
+}
 
-$(function() {
+
+function main() {
+
+
   var anchors = $('a').filter(isElementInViewport);
   var links = anchors.map(function() {
     return new Link({"anchor": $(this), "text":$(this).innerText, "x": $(this).offset().left, "y": $(this).offset().top});
@@ -88,23 +94,24 @@ $(function() {
   $("body").on("keyup", function(event) {
     var keyCode = event.which;
     if (keyCode == 27) {
-        $(".popup").remove();
-        $("body").off("keyup");
+        exitExtension();
     } else {
         var letter = String.fromCharCode(keyCode).toLowerCase();
         if (isValidLetter(letter)) {
             buffer += letter;
             if (shortcutMap.hasOwnProperty(buffer)) {
                 var link = shortcutMap[buffer];
-                link.anchor[0].click()
-                $(".popup").remove();
-                $("body").off("keyup");
+                link.anchor[0].click(main);
+                exitExtension();
+
             }
         }
       }
 
     })
+}
 
+main();
   /*
 
   Procedure:
@@ -122,5 +129,5 @@ $(function() {
 
 
   */
-});
+// });
 
