@@ -20,3 +20,4 @@ $(function() {
   var anchors = $('a').filter(isElementInViewport);
 
 });
+
