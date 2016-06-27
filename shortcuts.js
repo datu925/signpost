@@ -10,6 +10,7 @@ function isElementInViewport (el) {
     );
 }
 
+
 function genCharArray(charA, charZ) {
     var a = [], i = charA.charCodeAt(0), j = charZ.charCodeAt(0);
     for (; i <= j; ++i) {
@@ -19,23 +20,67 @@ function genCharArray(charA, charZ) {
 }
 
 function generateShortcutList(size) {
-    var iterations = size / 25;
-    var remainder = size % 25;
-    var alphabet = genCharArray("a","y");
-    var list = []
-    var i = 0;
+  // map shortcut keys to keyboard strokes
+  // 0 => aa, 1 => ab, etc.
+  // if size <= 26, 0 => a, 1 => b, etc.
+  // if size >= 27 and <= 26^2, 0=> aa, 1=>ab, etc.
+  // so just take base 26 rep and convert to letters
+  // first need to know how size compares to powers of 26
+    if (size == 0) {
+        return [];
+    }
+    var keys = genCharArray("a","m");
+    var prefixes = genCharArray("n","z");
+
+    var iterations = Math.floor((size - keys.length) / (prefixes.length * keys.length));
+    var remainder = (size - keys.length) % (prefixes.length * keys.length);
+    var list = [];
+    if (size <= 13) {
+        for (var i = 0; i < size; i++) {
+            list.push(keys[i]);
+        }
+        return list;
+    } else {
+        for (var i = 0; i < 13; i++) {
+            list.push(keys[i]);
+        }
+    }
+
+    // debugger;
+    var i = 0
     while (i < iterations) {
-        list = list.concat(alphabet.map(function(letter) {
-            return Array(i + 1).join("z") + letter;
-        }));
+        for (var j = 0; j < prefixes.length; j++) {
+            list = list.concat(keys.map(function(letter) {
+                return Array(i + 2).join(prefixes[j]) + letter;
+            }));
+        }
         i += 1;
     }
 
     for (var j = 0; j < remainder; j++) {
-        list.push(Array(i + 1).join("z") + alphabet[j])
+        list.push(Array(i + 2).join(prefixes[Math.floor(j / keys.length)]) + keys[j % keys.length])
     }
     return list;
 }
+
+// function generateShortcutList(size) {
+//     var iterations = size / 25;
+//     var remainder = size % 25;
+//     var alphabet = genCharArray("a","y");
+//     var list = []
+//     var i = 0;
+//     while (i < iterations) {
+//         list = list.concat(alphabet.map(function(letter) {
+//             return Array(i + 1).join("z") + letter;
+//         }));
+//         i += 1;
+//     }
+
+//     for (var j = 0; j < remainder; j++) {
+//         list.push(Array(i + 1).join("z") + alphabet[j])
+//     }
+//     return list;
+// }
 
 
 function assignLinks(shortcutList, links) {
@@ -60,74 +105,79 @@ function isValidLetter(letter) {
     return "a" <= letter && "z" >= letter;
 }
 
-function exitExtension() {
+function exitExtension(currentFocus) {
+    if (currentFocus != undefined) {
+        currentFocus.focus();
+    }
     $(".popup").remove();
     $("body").off("keyup");
 }
 
+function yOffset(y) {
+    if (y < 20) {
+        return 0
+    } else {
+        return y - 20
+    }
+}
 
 function main() {
 
+    // exit any input forms, etc. we're filling out so that the keyboard shortcuts work. We will come back to them later.
+    var currentFocus = $(document.activeElement);
+    if (currentFocus != undefined) {
+        currentFocus.blur();
+    }
 
-  var anchors = $('a').filter(isElementInViewport);
-  var links = anchors.map(function() {
-    return new Link({"anchor": $(this), "text":$(this).innerText, "x": $(this).offset().left, "y": $(this).offset().top});
+    var anchors = $('a,input').filter(isElementInViewport);
+    var links = anchors.map(function() {
+        return new Link({"anchor": $(this), "text":$(this).innerText, "x": $(this).offset().left, "y": $(this).offset().top});
     });
 
-  var shortcutList = generateShortcutList(links.length);
-  var shortcutMap = assignLinks(shortcutList, links);
+    var shortcutList = generateShortcutList(links.length);
+    var shortcutMap = assignLinks(shortcutList, links);
 
-  links.each(function() {
-    var popup = generatePopup(this);
-    $("body").append(popup);
-    popup.css({
-                "position":"absolute",
-                "top": this.y - 20, "left": this.x,
-                "background-color": "white",
-                "border": "1px solid black",
-                "padding": "10px",
-                "z-index": 10000
-                });
-  });
+    links.each(function() {
+        var popup = generatePopup(this);
+        $("body").append(popup);
+        popup.css({
+            "position":"absolute",
+            "top": yOffset(this.y), "left": this.x,
+            "background-color": "white",
+            "display": "block",
+            "opacity": 0.75,
+            "border": "1px solid black",
+            "padding": "1px",
+            "z-index": 100000
+        });
+    });
 
-  var buffer = ""
-  $("body").on("keyup", function(event) {
-    var keyCode = event.which;
-    if (keyCode == 27) {
-        exitExtension();
-    } else {
-        var letter = String.fromCharCode(keyCode).toLowerCase();
-        if (isValidLetter(letter)) {
-            buffer += letter;
-            if (shortcutMap.hasOwnProperty(buffer)) {
-                var link = shortcutMap[buffer];
-                link.anchor[0].click(main);
-                exitExtension();
+    var buffer = ""
+    $("body").on("keyup", function(event) {
+        var keyCode = event.which;
+        if (keyCode == 27) {
+            exitExtension(currentFocus);
+        } else {
+            var letter = String.fromCharCode(keyCode).toLowerCase();
+            if (isValidLetter(letter)) {
+                buffer += letter;
+                if (shortcutMap.hasOwnProperty(buffer)) {
+                    var link = shortcutMap[buffer];
+                    // debugger;
+                    if ($(link.anchor[0]).is("input")) {
+                        link.anchor[0].focus();
+                        exitExtension();
+                    } else {
+                        link.anchor[0].click();
+                        exitExtension();
+                    }
 
+                }
             }
         }
-      }
 
     })
 }
 
 main();
-  /*
-
-  Procedure:
-
-    1. Find all links in current viewport. Done.
-    2. Freeze other possible user action. For instance, you can't click or fill out a form (or rather, doing so cancels script execution).
-    2. Take those links and assign letters than represent shortcuts to them. Done.
-    3. Overlay a small popup just over the original link containing their new shortcut. Done.
-    3. Upon key press, there are a number of options:
-        a. It's escape, and we should remove everything.
-        b. It's a "z" (or some other key that is the start, but not the entirety, of a sequence), and we need to record that we've gotten that far.
-        c. It's another key that completes a sequence. Have jquery click the link and then finish script execution.
-        d. It's another key that doesn't belong at all and should be ignored.
-    4. Upon esc, exit the script.
-
-
-  */
-// });
 
