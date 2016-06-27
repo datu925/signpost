@@ -15,5 +15,12 @@
   "background": {
     "scripts": ["application.js"],
     "persistent": false
+  },
+  "commands": {
+    "_execute_browser_action": {
+      "suggested_key": {
+        "default": "Ctrl+K"
+      }
+    }
   }
 }
