@@ -21,11 +21,6 @@ function genCharArray(charA, charZ) {
 
 function generateShortcutList(size) {
   // map shortcut keys to keyboard strokes
-  // 0 => aa, 1 => ab, etc.
-  // if size <= 26, 0 => a, 1 => b, etc.
-  // if size >= 27 and <= 26^2, 0=> aa, 1=>ab, etc.
-  // so just take base 26 rep and convert to letters
-  // first need to know how size compares to powers of 26
     if (size == 0) {
         return [];
     }
@@ -46,7 +41,6 @@ function generateShortcutList(size) {
         }
     }
 
-    // debugger;
     var i = 0
     while (i < iterations) {
         for (var j = 0; j < prefixes.length; j++) {
@@ -63,24 +57,6 @@ function generateShortcutList(size) {
     return list;
 }
 
-// function generateShortcutList(size) {
-//     var iterations = size / 25;
-//     var remainder = size % 25;
-//     var alphabet = genCharArray("a","y");
-//     var list = []
-//     var i = 0;
-//     while (i < iterations) {
-//         list = list.concat(alphabet.map(function(letter) {
-//             return Array(i + 1).join("z") + letter;
-//         }));
-//         i += 1;
-//     }
-
-//     for (var j = 0; j < remainder; j++) {
-//         list.push(Array(i + 1).join("z") + alphabet[j])
-//     }
-//     return list;
-// }
 
 
 function assignLinks(shortcutList, links) {
@@ -123,15 +99,15 @@ function yOffset(y) {
 
 function main() {
 
-    // exit any input forms, etc. we're filling out so that the keyboard shortcuts work. We will come back to them later.
+    // exit any input forms, etc. we're filling out so that the keyboard shortcuts work. We will come back to them once the extension exits.
     var currentFocus = $(document.activeElement);
     if (currentFocus != undefined) {
         currentFocus.blur();
     }
 
-    var anchors = $('a,input').filter(isElementInViewport);
+    var anchors = $('a,input,button').filter(isElementInViewport);
     var links = anchors.map(function() {
-        return new Link({"anchor": $(this), "text":$(this).innerText, "x": $(this).offset().left, "y": $(this).offset().top});
+        return new Target({"anchor": $(this), "text":$(this).innerText, "x": $(this).offset().left, "y": $(this).offset().top});
     });
 
     var shortcutList = generateShortcutList(links.length);
