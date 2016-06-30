@@ -1,82 +1,3 @@
-function isElementInViewport (el) {
-
-    var rect = this.getBoundingClientRect();
-
-    return (
-        rect.top >= 0 &&
-        rect.left >= 0 &&
-        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && /*or $(window).height() */
-        rect.right <= (window.innerWidth || document.documentElement.clientWidth) /*or $(window).width() */
-    );
-}
-
-
-function genCharArray(charA, charZ) {
-    var a = [], i = charA.charCodeAt(0), j = charZ.charCodeAt(0);
-    for (; i <= j; ++i) {
-        a.push(String.fromCharCode(i));
-    }
-    return a;
-}
-
-function generateShortcutList(size) {
-  // map shortcut keys to keyboard strokes
-    if (size == 0) {
-        return [];
-    }
-    var keys = genCharArray("a","m");
-    var prefixes = genCharArray("n","z");
-
-    var iterations = Math.floor((size - keys.length) / (prefixes.length * keys.length));
-    var remainder = (size - keys.length) % (prefixes.length * keys.length);
-    var list = [];
-    if (size <= 13) {
-        for (var i = 0; i < size; i++) {
-            list.push(keys[i]);
-        }
-        return list;
-    } else {
-        for (var i = 0; i < 13; i++) {
-            list.push(keys[i]);
-        }
-    }
-
-    var i = 0
-    while (i < iterations) {
-        for (var j = 0; j < prefixes.length; j++) {
-            list = list.concat(keys.map(function(letter) {
-                return Array(i + 2).join(prefixes[j]) + letter;
-            }));
-        }
-        i += 1;
-    }
-
-    for (var j = 0; j < remainder; j++) {
-        list.push(Array(i + 2).join(prefixes[Math.floor(j / keys.length)]) + keys[j % keys.length])
-    }
-    return list;
-}
-
-
-
-function assignLinks(shortcutList, links) {
-    var i = 0;
-    var shortcutHash = {};
-    while (i < links.length) {
-        var shortcut = shortcutList[i]
-        links[i].shortcut = shortcut;
-        shortcutHash[shortcut] = links[i];
-        i += 1;
-    }
-    return shortcutHash;
-}
-
-function generatePopup(link) {
-    var div = $("<div class=popup>");
-    var txt = $("<span class=popup_text>");
-    return div.append(txt.text(link.shortcut))
-}
-
 function isValidLetter(letter) {
     return "a" <= letter && "z" >= letter;
 }
@@ -87,67 +8,59 @@ function exitExtension(currentFocus) {
     }
     $(".popup").remove();
     $("body").off("keyup");
+    $("body").off("click");
 }
 
-function yOffset(y) {
-    if (y < 20) {
-        return 0
+function triggerTarget(target) {
+    if ($(target.anchor[0]).is("input")) {
+        target.anchor[0].focus();
+        exitExtension();
     } else {
-        return y - 20
+        target.anchor[0].click();
+        exitExtension();
     }
 }
 
-function main() {
 
+
+function main() {
     // exit any input forms, etc. we're filling out so that the keyboard shortcuts work. We will come back to them once the extension exits.
     var currentFocus = $(document.activeElement);
     if (currentFocus != undefined) {
         currentFocus.blur();
     }
 
-    var anchors = $('a,input,button').filter(isElementInViewport);
-    var links = anchors.map(function() {
+    var collector = new TargetCollector;
+    var targets = collector.collect('a,input,button');
+
+    var targets = targets.map(function() {
         return new Target({"anchor": $(this), "text":$(this).innerText, "x": $(this).offset().left, "y": $(this).offset().top});
     });
 
-    var shortcutList = generateShortcutList(links.length);
-    var shortcutMap = assignLinks(shortcutList, links);
+    var mapper = new ShortcutMapper(targets);
+    var shortcutMap = mapper.assign();
 
-    links.each(function() {
-        var popup = generatePopup(this);
-        $("body").append(popup);
-        popup.css({
-            "position":"absolute",
-            "top": yOffset(this.y), "left": this.x,
-            "background-color": "white",
-            "display": "block",
-            "opacity": 0.75,
-            "border": "1px solid black",
-            "padding": "1px",
-            "z-index": 100000
-        });
+    var generator = new PopupGenerator;
+    targets.each(function() {
+        generator.generateAndAdd(this);
     });
 
-    var buffer = ""
+    var sequence = ""
+    $("body").on("click", function(event) {
+        exitExtension();
+    })
+
     $("body").on("keyup", function(event) {
         var keyCode = event.which;
-        if (keyCode == 27) {
+        if (keyCode == 27) { // escape key
             exitExtension(currentFocus);
         } else {
             var letter = String.fromCharCode(keyCode).toLowerCase();
             if (isValidLetter(letter)) {
-                buffer += letter;
-                if (shortcutMap.hasOwnProperty(buffer)) {
-                    var link = shortcutMap[buffer];
-                    // debugger;
-                    if ($(link.anchor[0]).is("input")) {
-                        link.anchor[0].focus();
-                        exitExtension();
-                    } else {
-                        link.anchor[0].click();
-                        exitExtension();
-                    }
-
+                sequence += letter;
+                if (shortcutMap.hasOwnProperty(sequence)) {
+                    var target = shortcutMap[sequence];
+                    triggerTarget(target);
                 }
             }
         }

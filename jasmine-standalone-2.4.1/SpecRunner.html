@@ -11,12 +11,22 @@
   <script src="lib/jasmine-2.4.1/jasmine-html.js"></script>
   <script src="lib/jasmine-2.4.1/boot.js"></script>
 
+  <!-- including jquery stuff... -->
+  <script src="../jquery-3.0.0.min.js"></script>
+  <script src="jasmine-jquery.js"></script>
+
   <!-- include source files here... -->
   <script src="../models/Target.js"></script>
+  <script src="../services/TargetCollector.js"></script>
+  <script src="../services/ShortcutMapper.js"></script>
+  <script src="../services/PopupGenerator.js"></script>
   <script src="../shortcuts.js"></script>
 
   <!-- include spec files here... -->
   <script src="spec/SpecHelper.js"></script>
+  <script src="spec/ShortcutMapperSpec.js"></script>
+  <script src="spec/PopupGeneratorSpec.js"></script>
+  <script src="spec/TargetCollectorSpec.js"></script>
   <script src="spec/TargetSpec.js"></script>
   <script src="spec/shortcutSpec.js"></script>
 

@@ -16,4 +16,5 @@ function isElementInViewport (el) {
 
 TargetCollector.prototype.collect = function(query) {
   this.collection = $(query).filter(isElementInViewport)
+  return this.collection;
 };
