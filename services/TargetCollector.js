@@ -2,7 +2,7 @@ function TargetCollector() {
   this.collection = [];
 }
 
-function isElementInViewport (el) {
+function isElementInViewport(el) {
 
     var rect = this.getBoundingClientRect();
 

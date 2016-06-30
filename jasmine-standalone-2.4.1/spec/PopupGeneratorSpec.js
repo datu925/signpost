@@ -10,6 +10,7 @@ describe("PopupGenerator", function() {
 
   describe("generateAndAdd", function() {
     it("generates and adds to DOM", function() {
+      // loadFixtures('berkshire-test.html')
       var target = new Target({"anchor": "test", "text":"text", "x": 100, "y": 200});
       target.shortcut = "b";
       var popup = gen.generateAndAdd(target)
