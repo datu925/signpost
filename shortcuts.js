@@ -41,9 +41,12 @@ function main() {
     var shortcutMap = mapper.assign();
 
     var generator = new PopupGenerator;
+    var els = [];
     targets.each(function() {
-        generator.generateAndAdd(this);
+        els.push(generator.createHTML(this));
+        // generator.generateAndAdd(this);
     });
+    $("body").append(els);
 
     var sequence = ""
     $("body").on("click", function(event) {
