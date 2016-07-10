@@ -12,9 +12,9 @@ function yOffset(y) {
 
 PopupGenerator.prototype.createHTML = function(target) {
     // var div = $("<div class=popup>");
-    var div = $("<div class=popup style='top:" + yOffset(target.y) + "px;left:" + target.x + "px;'>")
-    var txt = $("<span class=popup_text>");
-    return div.append(txt.text(target.shortcut));
+    var div = "<div class=popup style='top:" + yOffset(target.y) + "px;left:" + target.x + "px;'><span class=popup_text>" + target.shortcut + "</span></div>"
+    // var txt = $("<span class=popup_text>");
+    return div;//.append(txt.text(target.shortcut));
 }
 
 

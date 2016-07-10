@@ -1,6 +1,5 @@
 chrome.browserAction.onClicked.addListener(function(tab) {
   // No tabs or host permissions needed!
-
     chrome.tabs.insertCSS(null, {file: "shortcuts.css"});
     chrome.tabs.executeScript(null, {file: "models/Target.js"});
     chrome.tabs.executeScript(null, {file: "services/TargetCollector.js"});
