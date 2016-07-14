@@ -15,6 +15,19 @@ function isElementInViewport(el) {
 }
 
 TargetCollector.prototype.collect = function(query) {
-  this.collection = $(query).filter(isElementInViewport)
+  this.collection = $(query).filter(isElementInViewport);
+  // var col = [];
+  // debugger;
+  // $("body *").filter(isElementInViewport).each(function(i,e){
+  //   // console.log("Not caught!")
+  //   if ($(e).is("a,input,button")) {
+  //     col.push(e);
+  //   } else if (e.click) {
+  //     console.log(getEventListeners(e));
+  //     col.push(e);
+  //   } else {
+  //   };
+  // });
+  // this.collection = $(col);
   return this.collection;
 };
