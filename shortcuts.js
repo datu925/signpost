@@ -12,11 +12,11 @@ function exitExtension(currentFocus) {
 }
 
 function triggerTarget(target) {
-    if ($(target.anchor[0]).is("input")) {
-        target.anchor[0].focus();
+    if ($(target.anchor[0]).is("a,button,input[type='submit']")) {
+        target.anchor[0].click();
         exitExtension();
     } else {
-        target.anchor[0].click();
+        target.anchor[0].focus();
         exitExtension();
     }
 }
@@ -31,7 +31,7 @@ function main() {
     }
 
     var collector = new TargetCollector;
-    var targets = collector.collect('a,input,button');
+    var targets = collector.collect('a,input,button,select');
 
     var targets = targets.map(function() {
         return new Target({"anchor": $(this), "text":$(this).innerText, "x": $(this).offset().left, "y": $(this).offset().top});
