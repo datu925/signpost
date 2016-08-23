@@ -1,6 +1,6 @@
 #Synopsis
 
-This project, currently titled Breadcrumbs, is a Chrome extension that after the extension is triggered, will assign a shortcut to every visible link on a webpage, show the user those shortcuts, and "click" the selected link once the user has entered that keyboard sequence. This allows for faster, mouse-free clicking clicking behavior.
+This project, currently titled SignPost, is a Chrome extension that after the extension is triggered, will assign a shortcut to every visible link on a webpage, show the user those shortcuts, and "click" the selected link once the user has entered that keyboard sequence. This allows for faster, mouse-free clicking clicking behavior.
 
 <img src="images/screenshot.png" width='100%'>
 
@@ -16,4 +16,4 @@ Anyone who has ever used [the alt-based shortcuts in Microsoft Office](https://y
 
 #Disclaimer/Contributing
 
-As this is a free side project, it is still lacking a number of features that may someday be added. Not all things that we have come to think of as buttons, links, etc. will be selected by Breadcrumbs, which only looks at `a`, `input`, and `button` tags. Many other items on the web are "clickable", but in more subtle ways. The service may not place popups correctly in all cases or even work on some sites at all. Feel free to make pull requests or submit issues for things for us to consider. We hope that even with its flaws, Breadcrumbs improves your ability to shortcut the web.
+As this is a free side project, it is still lacking a number of features that may someday be added. Not all things that we have come to think of as buttons, links, etc. will be selected by SignPost, which only looks at `a`, `input`, and `button` tags. Many other items on the web are "clickable", but in more subtle ways. The service may not place popups correctly in all cases or even work on some sites at all. Feel free to make pull requests or submit issues for things for us to consider. We hope that even with its flaws, Breadcrumbs improves your ability to shortcut the web.
